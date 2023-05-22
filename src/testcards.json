@@ -1,0 +1,9 @@
+[
+    {
+        "last-four" : 1234,
+        "type" : "Credit", // Credit, Debit
+        "provider" : "Visa", // Cash, Venmo, Zelle, Card provider
+        "bank" : "Chase",
+        "account-number" : "1234634623"
+    }
+]

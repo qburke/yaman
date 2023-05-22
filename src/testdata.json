@@ -1,0 +1,38 @@
+[
+    {
+        "id" : 7349061346,
+        "amount" : 100,
+        "date" : {
+            "month" : 8,
+            "day" : 23,
+            "year" : 2022
+        },
+        "seller" : "BFresh",
+        "tags" : [ "food" ],
+        "bank" : "Chase", 
+        "account" : {
+            "alias" : "Checking",
+            "id" : "12381236589"
+        },
+        "method" : "Credit Card",
+        "memo" : "sopghqe0rphgq"
+    },
+    {
+        "id" : 7349061346,
+        "amount" : -50,
+        "date" : {
+            "month" : 8,
+            "day" : 23,
+            "year" : 2022
+        },
+        "seller" : "BFresh",
+        "tags" : [ "food" ],
+        "bank" : "Chase", 
+        "account" : {
+            "alias" : "Checking",
+            "id" : "12381236589"
+        },
+        "method" : "Credit Card",
+        "memo" : "sopghqe0rphgq"
+    }
+]
