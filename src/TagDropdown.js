@@ -7,19 +7,22 @@ function TagDropdown() {
         //icon='tags'
         //iconPosition='left'
         placeholder='Tags'
-        multiple selection
+        selection
         options={[{ key: 'food', text: 'Food', value: 'food' }, { key: 'rent', text: 'Rent', value: 'rent' }]} />
     );
 }
 
-function TagDropdownForm() {
+function TagDropdownForm(props) {
     return (
     <Form.Dropdown
         //icon='tags'
         //iconPosition='left'
         placeholder='Tags'
-        multiple selection
-        options={[{ key: 'food', text: 'Food', value: 'food' }, { key: 'rent', text: 'Rent', value: 'rent' }]} />
+        selection
+        options={props.options}
+        width={props.width}
+        name={props.name}
+        onChange={props.onChange}/>
     );
 }
 

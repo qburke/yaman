@@ -1,6 +1,6 @@
 import React from 'react';
 import TagDropdown from './TagDropdown';
-import { Modal, Button, Header, Form } from 'semantic-ui-react';
+import { Modal, Button, Header, Form, Divider } from 'semantic-ui-react';
 
 /* keep open after submit, second modal with success/failure
 amount seller date
@@ -9,41 +9,119 @@ memo
 receipt
 */
 
+// summary: tags, method
+
 // props: add, edit, remove, none
 class TxnFormInner extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log(props.cards);
         this.state = {
-        name: '', email: '', amount: '', vendor: '', method: '', date: '', memo: '', receipt: '', bank: '', account: '', submittedName: '', submittedEmail: '',
+        amount: '', vendor: '', method: '', date: '', memo: '', receipt: '', tag: '', newTag: '', newTagParent: '',
         cardOptions: props.cards.map((card) => {
             return {
               key : card.lastFour,
               text: card.lastFour,
               value: card
             }
-          })
+          }),
+        tags: ['Loading...'],
+        parentTags: ['Loading...']
         }
     }
 
-    handleChange = (e, { name, value }) => this.setState({ [name]: value })
+    fetchTags = () => {
+        fetch("http://localhost:5000/tags")
+        .then(res => res.json())
+        .then(
+          (result) => {
+            this.setState({
+              tags: result
+            });
+          },
+          (error) => {
+            this.setState({
+              error
+            });
+          }
+        )
+        fetch("http://localhost:5000/parent-tags")
+        .then(res => res.json())
+        .then(
+          (result) => {
+            this.setState({
+              parentTags: result
+            });
+          },
+          (error) => {
+            this.setState({
+              error
+            });
+          }
+        )
+    }
 
-    handleMethod = (e, {name, value }) => {
-        this.bank = value.bank;
-        this.account = value.account;
-        this.handleChange(e, { name, value });
+    componentDidMount() {
+        this.fetchTags()
+    }
+
+    handleChange = (e, { name, value }) => {
+        this.setState({ [name]: value }) 
+        // if date and two slashes tehn 
+        // highlight on errors
     }
 
     handleSubmit = () => {
-        const { name, email } = this.state
+        fetch("http://localhost:5000/new-txn", {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+                "Content-Type": "text/plain"
+            },
+            body: JSON.stringify({
+                amount : this.state.amount,
+                vendor : this.state.vendor,
+                method : this.state.method,
+                date : this.state.date,
+                memo : this.state.memo,
+                receipt : this.state.receipt,
+                tag : this.state.tag
+            })
+        })
+        .then(
+          (result) => {
+          },
+          // Note: it's important to handle errors here
+          // instead of a catch() block so that we don't swallow
+          // exceptions from actual bugs in components.
+          (error) => {
+          }
+        )
+    }
 
-        this.setState({ submittedName: name, submittedEmail: email })
+    handleNewTag = () => {
+        fetch("http://localhost:5000/new-tag", {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+                "Content-Type": "text/plain"
+            },
+            body: JSON.stringify({
+                parent: this.state.newTagParent,
+                newtag: this.state.newTag
+            })
+        })
+        .then(
+          (result) => {
+            this.fetchTags()
+          },
+          (error) => {
+          }
+        )
     }
 
     render() {
-        const { name, email, amount, vendor, method, date, memo, receipt, bank, account, submittedName, submittedEmail } = this.state
-
+        const { amount, vendor, date, memo, receipt, tags, newTag, newTagParent, parentTags } = this.state
         return (
         <div>
             <Form onSubmit={this.handleSubmit}>
@@ -76,40 +154,39 @@ class TxnFormInner extends React.Component {
                 size='large'
                 value={date}
                 onChange={this.handleChange}
-                placeholder='Date'
+                placeholder='MM/dd/YY'
                 width={4}/>
             </Form.Group>
             <Form.Group>
-                <TagDropdown.Form/>
+                <TagDropdown.Form
+                name='tag'
+                width={4}
+                onChange={this.handleChange}
+                options={tags.map((tag) => {return { key: tag, text: tag, value: tag }})}
+                />
                 <Form.Dropdown
-                onChange={this.handleMethod}
+                onChange={this.handleChange}
                 options={this.state.cardOptions}
                 placeholder='Method'
                 selection
-                value={method}/>
+                name='method'
+                width={4}/>
                 <Form.Input
-                placeholder='Bank'
-                value={bank}
-                readOnly />
-                <Form.Input
-                placeholder='Account'
-                value={account}
-                readOnly />
-            </Form.Group>
-            <Form.Group>
-            <Form.Input
                 icon=''
                 iconPosition='left'
                 type='text'
                 name='memo'
                 value={memo}
                 onChange={this.handleChange}
-                placeholder='Memo'/>
+                placeholder='Memo'
+                width={8}/>
+            </Form.Group>
+            <Form.Group>
             <Form.Input
                 icon=''
                 iconPosition='left'
                 type='text'
-                name='recipt'
+                name='receipt'
                 value={receipt}
                 onChange={this.handleChange}
                 placeholder='Receipt'/>
@@ -117,31 +194,35 @@ class TxnFormInner extends React.Component {
             <Form.Group>
                 <Form.Button content='Submit' />
             </Form.Group>
+            </Form>
+            <Divider />
+            <Form onSubmit={this.handleNewTag}>
             <Form.Group>
                 <Form.Input
-                placeholder='Name'
-                name='name'
-                value={name}
-                onChange={this.handleChange}
-                />
-                <Form.Input
-                placeholder='Email'
-                name='email'
-                value={email}
-                onChange={this.handleChange}
-                />
+                    icon=''
+                    iconPosition='left'
+                    type='text'
+                    name='newTag'
+                    value={newTag}
+                    onChange={this.handleChange}
+                    placeholder='New Tag'
+                    width={4}
+                    />
+                <TagDropdown.Form
+                    name='newTagParent'
+                    width={4}
+                    onChange={this.handleChange}
+                    options={parentTags.map((tag) => {return { key: tag, text: tag, value: tag }})}
+                    />
+                <Form.Button content='Create' />
             </Form.Group>
             </Form>
-            <strong>onChange:</strong>
-            <pre>{JSON.stringify({ name, email, amount }, null, 3)}</pre>
-            <strong>onSubmit:</strong>
-            <pre>{JSON.stringify({ submittedName, submittedEmail }, null, 2)}</pre>
         </div>
         )
     }
 }
 
-function TxnForm () {
+function TxnForm (props) {
     const [open, setOpen] = React.useState(false);
     return (
         <Modal
@@ -150,9 +231,9 @@ function TxnForm () {
         trigger={<Button>Show Modal</Button>}
         onClose={() => setOpen(false)}
         onOpen={() => setOpen(true)}>
-        <Header icon='archive' content='Archive Old Messages' />
+        <Header icon='plus' content='New Transaction' />
         <Modal.Content>
-            <TxnFormInner/>
+            <TxnFormInner cards={props.cards}/>
         </Modal.Content>
     </Modal>
     );
