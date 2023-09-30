@@ -17,17 +17,22 @@ class TxnFormInner extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-        amount: '', vendor: '', method: '', date: '', memo: '', receipt: '', tag: '', newTag: '', newTagParent: '',
-        cardOptions: props.cards.map((card) => {
-            return {
-              key : card.lastFour,
-              text: card.lastFour,
-              value: card
-            }
-          }),
-        tags: ['Loading...'],
-        parentTags: ['Loading...']
+            amount: '', vendor: '', method: '', date: '', memo: '', receipt: '', tag: '', newTag: '', newTagParent: '',
+            methods: ['Loading...'],
+            tags: ['Loading...'],
+            parentTags: ['Loading...'],
+            editMode: props.txn ? true : false
         }
+        if (props.txn) {
+            this.state.amount = props.txn.amount;
+            this.state.vendor = props.txn.vendor;
+            this.state.method = props.txn.method;
+            this.state.date = props.txn.date;
+            this.state.memo = props.txn.memo;
+            this.state.receipt = props.txn.receipt;
+            this.state.tag = props.txn.tag;
+        }
+        //this.fetchTxns = props.fetchTxns
     }
 
     fetchTags = () => {
@@ -45,12 +50,46 @@ class TxnFormInner extends React.Component {
             });
           }
         )
+        fetch("http://localhost:5000/tag-tree")
+        .then(res => res.json())
+        .then(
+          (result) => {
+            var tagTree = []
+            Object.entries(result).forEach(([parent, children]) => {
+              tagTree.push({key: parent, text: parent, value: parent})
+              tagTree.push(...children.map((tag) => {return { key: tag, text: "|-- " + tag, value: tag }}))
+            })
+            console.log(tagTree)
+            this.setState({
+              tagTree: tagTree
+            });
+          },
+          (error) => {
+            this.setState({
+              error
+            });
+          }
+        )
         fetch("http://localhost:5000/parent-tags")
         .then(res => res.json())
         .then(
           (result) => {
             this.setState({
               parentTags: result
+            });
+          },
+          (error) => {
+            this.setState({
+              error
+            });
+          }
+        )
+        fetch("http://localhost:5000/methods")
+        .then(res => res.json())
+        .then(
+          (result) => {
+            this.setState({
+              methods: result
             });
           },
           (error) => {
@@ -90,10 +129,8 @@ class TxnFormInner extends React.Component {
         })
         .then(
           (result) => {
-          },
-          // Note: it's important to handle errors here
-          // instead of a catch() block so that we don't swallow
-          // exceptions from actual bugs in components.
+            
+            },
           (error) => {
           }
         )
@@ -121,7 +158,7 @@ class TxnFormInner extends React.Component {
     }
 
     render() {
-        const { amount, vendor, date, memo, receipt, tags, newTag, newTagParent, parentTags } = this.state
+        const { amount, vendor, date, memo, method, tag, receipt, tags, newTag, parentTags, methods } = this.state
         return (
         <div>
             <Form onSubmit={this.handleSubmit}>
@@ -162,15 +199,17 @@ class TxnFormInner extends React.Component {
                 name='tag'
                 width={4}
                 onChange={this.handleChange}
-                options={tags.map((tag) => {return { key: tag, text: tag, value: tag }})}
+                options={this.state.tagTree}//{tags.map((tag) => {return { key: tag, text: tag, value: tag }})}
+                value={tag}
                 />
-                <Form.Dropdown
+            <Form.Dropdown
                 onChange={this.handleChange}
-                options={this.state.cardOptions}
+                options={methods.map((m) => {return { key: m, text: m, value: m }})}
                 placeholder='Method'
                 selection
                 name='method'
-                width={4}/>
+                width={4}
+                value={method}/>
                 <Form.Input
                 icon=''
                 iconPosition='left'
@@ -228,12 +267,12 @@ function TxnForm (props) {
         <Modal
         closeIcon
         open={open}
-        trigger={<Button>Show Modal</Button>}
+        trigger={props.txn ? props.children : <Button>New Transaction</Button>}
         onClose={() => setOpen(false)}
         onOpen={() => setOpen(true)}>
-        <Header icon='plus' content='New Transaction' />
+        <Header icon='plus' content={props.txn ? 'Edit Transaction' : 'New Transaction'} />
         <Modal.Content>
-            <TxnFormInner cards={props.cards}/>
+            <TxnFormInner txn={props.txn} />
         </Modal.Content>
     </Modal>
     );
