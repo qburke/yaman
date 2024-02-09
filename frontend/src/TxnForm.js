@@ -1,6 +1,9 @@
 import React from 'react';
 import TagDropdown from './TagDropdown';
 import { Modal, Button, Header, Form, Divider } from 'semantic-ui-react';
+import DatePicker from "react-datepicker";
+
+import "react-datepicker/dist/react-datepicker.css";
 
 /* keep open after submit, second modal with success/failure
 amount seller date
@@ -59,7 +62,6 @@ class TxnFormInner extends React.Component {
               tagTree.push({key: parent, text: parent, value: parent})
               tagTree.push(...children.map((tag) => {return { key: tag, text: "|-- " + tag, value: tag }}))
             })
-            console.log(tagTree)
             this.setState({
               tagTree: tagTree
             });
@@ -121,7 +123,7 @@ class TxnFormInner extends React.Component {
                 amount : this.state.amount,
                 vendor : this.state.vendor,
                 method : this.state.method,
-                date : this.state.date,
+                date : this.state.date.toISOString().substring(0, 10),
                 memo : this.state.memo,
                 receipt : this.state.receipt,
                 tag : this.state.tag
@@ -175,24 +177,18 @@ class TxnFormInner extends React.Component {
                 width={4}/>
                 <Form.Input
                 icon=''
-                iconPosition='left'
-                type='text'
                 name='vendor'
                 size='large'
                 value={vendor}
                 onChange={this.handleChange}
                 placeholder='Vendor'
                 width={8}/>
-                <Form.Input
-                icon=''
-                iconPosition='left'
-                type='text'
-                name='date'
-                size='large'
-                value={date}
-                onChange={this.handleChange}
-                placeholder='MM/dd/YY'
-                width={4}/>
+                <DatePicker
+                    showIcon
+                    name='date'
+                    selected={date}
+                    onChange={(date) => this.setState({date : date})}
+                />
             </Form.Group>
             <Form.Group>
                 <TagDropdown.Form

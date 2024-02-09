@@ -8,7 +8,7 @@ import SearchArea from './SearchArea';
 import SpendingChart from './SpendingChart';
 import Accounts from './Accounts';
 import { useRef } from 'react';
-import { Grid, List, Segment, Divider } from 'semantic-ui-react';
+import { Input, Grid, List, Segment, Divider } from 'semantic-ui-react';
 
 function Layout(top, left, middle, right) {
   return (
@@ -142,6 +142,7 @@ class App extends React.Component {
       <SpendingChart summary={this.state.summary} loaded={this.state.summaryLoaded}/>,
       <Segment basic>
    	    <Accounts accounts={this.state.accounts} />
+        <Input transparent label='Income' value={1}/>
         <TxnForm cards={this.state.cards} />
       </Segment>
     )

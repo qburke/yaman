@@ -1,0 +1,67 @@
+Types
+Transaction
+
+
+Methods
+GET /list-transactions
+Parameters:
+startDate (ISO format, default=first of current month)
+endDate (ISO format, default=last day of current month)
+tags
+amount
+vendor
+
+
+Returns the list of transactions that satisfy the 
+
+GET /summary
+POST /new-txn
+POST /acc-balances
+GET /tags
+GET /tag-tree
+GET /parent-tags
+POST /new-tag
+GET /methods
+GET /accounts
+POST /update-income
+POST /delete-txn
+POST /edit-txn
+
+
+Problems I have:
+I forget to upload my receipts and add my transactions. I like to wait until the Point-Of-Sale transaction
+commits on my credit card.
+Solution:
+Pipeline to upload (or create) receipt > add to work queue > go through in batch
+Requires: receipt endpoint (image or text i.e. partial txn)
+Honestly this doesnt require an additional work queue, they can just be in the regular list but marked,
+with a checkbox to filter by the ones that need attention, so needs the edit endpoint
+
+Sometimes I make a purchase that includes other things
+Requires: itemization: frontend work and backend type structure
+
+I want to see my monthly breakdowns better
+Requires:
+- Better UI interface for date selection
+- Fixing the salary setter (see next)
+
+I want more useful verification. I need to know if my CC statement is the same. I need to know what is
+going in and out of Venmo. I should be processing my paystubs.
+Requires:
+- Ledger page: account balances; transfer transaction for Venmo transfers
+This needs more thought
+
+I want to see my disposable income. I want to see if I can be putting more towards myself or other accounts
+i.e. investments, charity.
+Requires: Targets on Pie Chart
+
+I want to set temporary goals i.e. saving for a trip or something
+Reuiqres: Temporary targets
+
+I want to see the growth of my other accounts
+Requires:
+- Ledger/account page w graph view
+
+I want to see more what-if conditions: like lower or higher rent etc
+
+Stretch goal: alternate view with water system and investing / self feedback loops
