@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id" : "https://github.com/qburke/yaman/transaction.schema.json",
+  "title" : "Transaction",
+  "description" : "A transaction made by the user",
+  "type" : "object",
+  "properties" : {
+    "id" : {
+      "description" : "The unique id for the transaction",
+      "type" : "integer"
+    },
+    "amount" : {
+      "description" : "The USD amount of the transaction",
+      "type" : "number",
+      "exclusiveMinimum" : 0
+    },
+    "vendor" : {
+      "description" : "The vendor in the transaction",
+      "type" : "string"
+    },
+    "date" : {
+      "description" : "The date the transaction was made",
+      "type" : "string",
+      "format" : "date"
+    },
+    "tag" : {
+      "description" : "The categorical tag of the transaction. Tag must be registered.",
+      "type" : "string"
+    },
+    "method" : {
+      "description" : "The payment method used for the transaction. Method must be registered.",
+      "type" : "string"
+    },
+    "memo" : {
+      "description" : "The user provided memo for the transaction",
+      "type" : "string"
+    }
+  }
+}
